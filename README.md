@@ -1,4 +1,7 @@
 # @nxus/tester
+
+[![Build Status](https://travis-ci.org/nxus/tester.svg?branch=master)](https://travis-ci.org/nxus/tester)
+
 A test management framework for Nxus applications.  The tester module provides some helper functions for funtionally testing a Nxus app.
 
 ## Installation
