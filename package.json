@@ -1,6 +1,6 @@
 {
   "name": "@nxus/tester",
-  "version": "2.2.0",
+  "version": "2.4.0-0",
   "description": "A test management framework for Nxus applications, built on Mocha and Chai",
   "main": "lib",
   "scripts": {
@@ -28,11 +28,11 @@
     "request": "^2.69.0"
   },
   "peerDependencies": {
-    "@nxus/core": "^2.2.0",
+    "@nxus/core": "^2.4.0-0",
     "forever": "^0.15.1"
   },
   "devDependencies": {
-    "@nxus/core": "^2.3.0",
+    "@nxus/core": "^2.4.0-0",
     "babel": "^5.6.23",
     "chai": "^3.4.1",
     "chai-as-promised": "^5.1.0",
