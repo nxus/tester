@@ -77,7 +77,9 @@ export default class Tester {
   fixture(modelId, path, options) {
     if(this.app.config.NODE_ENV == 'test') {
       this.app.log.debug("Loading fixture", path, "for model", modelId)
-      return this.app.get('data-loader').importFileToModel(modelId, path, options)
+      return this.app.once('startup', () => {
+        return this.app.get('data-loader').importFileToModel(modelId, path, options)
+      })
     }
   }
 
