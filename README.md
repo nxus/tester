@@ -32,6 +32,23 @@ In order to spin up the test server, add the following lines to your package.jso
       res.statusCode.should.equal(200)
     })
 
+#### Fixtures
+
+You can define fixtures (json or csv files with data to load during test startup) manually in your application modules:
+    app.get('tester').fixture('modelName', 'path/to/fixture.json')
+
+Or by creating a top-level application `fixtures` directory with files named for the models they contain fixture data for.
+
 ## API
 
 * * *
+
+## fixture
+
+Import a data file as fixture data for tests. Only runs if config.env==test
+
+**Parameters**
+
+-   `modelId` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The identity of the model to import
+-   `path` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The path to a file
+-   `options` **[object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Options to pass to data-loader.importFile
