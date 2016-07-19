@@ -1,7 +1,7 @@
 /* 
 * @Author: Mike Reich
 * @Date:   2016-02-05 08:28:40
-* @Last Modified 2016-02-20
+* @Last Modified 2016-05-19
 */
 /**
  * [![Build Status](https://travis-ci.org/nxus/tester.svg?branch=master)](https://travis-ci.org/nxus/tester)
@@ -10,15 +10,15 @@
  * 
  * ## Installation
  * 
- *     > npm install @nxus/tester --save-dev
+ *     > npm install nxus-tester --save-dev
  * 
  * ## Configuration
  * 
  * In order to spin up the test server, add the following lines to your package.json `scripts`.
  * 
- *     "pretest": "./node_modules/forever/bin/forever stopall && NODE_ENV=test PORT=3001 ./node_modules/forever/bin/forever start index.js && sleep 15"
+ *     "pretest": "forever stopall && NODE_ENV=test PORT=3002 forever start index.js && sleep 15"
  * 
- *     "posttest": "./node_modules/forever/bin/forever stop index.js"
+ *     "posttest": "forever stop index.js"
  * 
  * ## Usage
  * 
@@ -56,8 +56,7 @@ const fs = Promise.promisifyAll(fs_);
 
 const REGEX_FILE = /[^\/\~]$/;
 
-var base = 'http://localhost:3001/'
-
+var base = 'http://localhost:3002/'
 
 export default class Tester {
   constructor(app) {
