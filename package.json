@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/nxus/tester/",
   "dependencies": {
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
     "bluebird": "^3.2.1",
     "chai": "^3.5.0",
     "forever": "^0.15.1",
