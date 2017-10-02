@@ -114,8 +114,9 @@ var tester = Tester.getProxy()
 
 var request = request_lib.defaults({baseUrl: base})
 request.errors = request_errors
+var requestRaw = request.defaults({resolveWithFullResponse: true, simple: false})
 
-async function create_user (username, password = 'test') {
+async function createUser (username, password = 'test') {
   // TODO check for existing user, API?
   let req = await request_login('admin@nxus.org', 'admin')
   await req.post({
@@ -128,18 +129,20 @@ async function create_user (username, password = 'test') {
   return request_login(username, password)
 }
 
-function request_login (username, password = 'test') {
+async function requestLogin (username, password = 'test') {
   var jar = request.jar()
   var req = request.defaults({jar: jar})
   req.cookieJar = jar
-  return req.post({
+  await req.post({
     url: '/login',
     form: {
       username: username,
       password: password
     },
+    simple: false,
     followRedirect: false
   })
+  return req
 }
 
-export {Tester as default, tester, request, testServer, create_user, request_login, base}
+export {Tester as default, tester, request, requestRaw, testServer, createUser, requestLogin, base}
