@@ -28,7 +28,7 @@
  * 
  * ### Requests
  * 
- *     import {request} from '@nxus/tester'
+ *     import {request} from 'nxus-tester'
  * 
  *     request.get({url: '/'}, (err, res, body) => {
  *       res.statusCode.should.equal(200)
@@ -48,23 +48,33 @@
 'use strict';
 
 import Promise from 'bluebird'
-import request_lib from 'request'
+import request_lib from 'request-promise-native'
+import request_errors from 'request-promise-native/errors'
 import pluralize from 'pluralize'
 import path from 'path'
+import process from 'process'
 import fs_ from 'fs'
-const fs = Promise.promisifyAll(fs_);
+const fs = Promise.promisifyAll(fs_)
+
+import {NxusModule, application as app} from 'nxus-core'
+import {dataManager} from 'nxus-data-manager'
+
+import testServer from './testServer'
 
 const REGEX_FILE = /[^\/\~]$/;
 
 var base = 'http://localhost:3002/'
 
-export default class Tester {
-  constructor(app) {
-    this.app = app
-    this.app.get('tester').use(this)
-      .gather('fixture')
-
+class Tester extends NxusModule {
+  constructor() {
+    super()
     this._loadLocalFixtures()
+    app.onceAfter('launch', () => {
+      if (process.send) {
+        this.log.debug("Signalling parent process that server has launched")
+        process.send({nxus: {launched: true}})
+      }
+    })
   }
 
   /**
@@ -74,10 +84,10 @@ export default class Tester {
    * @param {object} options Options to pass to data-loader.importFile
    */
   fixture(modelId, path, options) {
-    if(this.app.config.NODE_ENV == 'test') {
-      this.app.log.debug("Loading fixture", path, "for model", modelId)
-      return this.app.once('startup', () => {
-        return this.app.get('data-loader').importFileToModel(modelId, path, options)
+    if(app.config.NODE_ENV == 'test') {
+      this.log.debug("Loading fixture", path, "for model", modelId)
+      return app.once('startup', () => {
+        return dataLoader.importFileToModel(modelId, path, options)
       })
     }
   }
@@ -100,48 +110,36 @@ export default class Tester {
     
   }
 }
+var tester = Tester.getProxy()
 
+var request = request_lib.defaults({baseUrl: base})
+request.errors = request_errors
 
-export var request = request_lib.defaults({baseUrl: base})
-
-export var create_user = (username, password = 'test') => {
+async function create_user (username, password = 'test') {
   // TODO check for existing user, API?
-  return request_login('admin@nxus.org', 'admin')
-  .then((req) => {
-    return new Promise((resolve, reject) => {
-      req.post(
-        {
-          url: '/admin/users/save',
-          form: {
-            email: username,
-            password: password
-          }
-        },
-        (err, res, body) => {
-          if (err) { reject(err) }
-          resolve(request_login(username, password))
-        })
-    })
-  }) 
+  let req = await request_login('admin@nxus.org', 'admin')
+  await req.post({
+    url: '/admin/users/save',
+    form: {
+      email: username,
+      password: password
+    }
+  })
+  return request_login(username, password)
 }
 
-export var request_login = (username, password = 'test') => {
+function request_login (username, password = 'test') {
   var jar = request.jar()
   var req = request.defaults({jar: jar})
   req.cookieJar = jar
-  return new Promise((resolve, reject) => {
-    req.post(
-      {
-        url: '/login',
-        form: {
-          username: username,
-          password: password
-        },
-        followRedirect: false
-      },
-      (err, res, body) => {
-        if (err) { reject(err) }
-        resolve(req)
-      })
+  return req.post({
+    url: '/login',
+    form: {
+      username: username,
+      password: password
+    },
+    followRedirect: false
   })
 }
+
+export {Tester as default, tester, request, testServer, create_user, request_login, base}
