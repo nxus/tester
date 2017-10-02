@@ -14,13 +14,26 @@
  * 
  * ## Configuration
  * 
- * In order to spin up the test server, add the following lines to your package.json `scripts`.
+ * You will want to use `mocha` as your test runner in your application project, here's a standard npm `test` script for your `package.json`
  * 
- *     "pretest": "forever stopall && NODE_ENV=test PORT=3002 forever start index.js && sleep 15"
- * 
- *     "posttest": "forever stop index.js"
+ *     "test": "NODE_ENV=test mocha --recursive --compilers js:babel-register -R spec modules/**/test/*",
  * 
  * ## Usage
+ * 
+ * ### Test Server startup
+ * 
+ * Any test suites that want to make requests to a running instance of your application should use `testServer`:
+ * 
+ *     describe("My App", function() {
+ *         before(function() {
+ *             this.timeout(4000) // Depending on your apps startup speed
+ *             testServer()
+ *         })
+ *         ... // Your tests
+ *     })
+ * 
+ * This is safe to call in multiple suites, only one test server will be started. You may pass an object as an
+ * optional second argument to `testServer` for command ENV variables, such as DEBUG.
  * 
  * ### Running tests
  * 
@@ -28,11 +41,30 @@
  * 
  * ### Requests
  * 
- *     import {request} from 'nxus-tester'
+ * Requests to the test server can be made using helper methods for the `requests-with-promises` library.
  * 
- *     request.get({url: '/'}, (err, res, body) => {
- *       res.statusCode.should.equal(200)
- *     })
+ *     import {request, requestRaw, requestLogin} from 'nxus-tester'
+ * 
+ * `request` returns the body of a successful response
+ *     
+ *     let body = await request.get('/') // or request({url: '/', ...})
+ *     res.statusCode.should.equal(200)
+ *     
+ * or errors with a non-2XX response
+ *     
+ *     let body = await request.get('/notHere')
+ *      .catch(request.errors.StatusCodeError, (err) => {...})
+ * 
+ * `requestRaw` returns the response object, if you want to check statusCode, headers, etc
+ *     let res = await requestRaw.get({url: '/admin', followRedirect: false})
+ *     res.statusCode.should.equal(302)
+ *     res.headers.location.should.contain('/login')
+ * 
+ * 
+ * `requestLogin`` creates a new cookie jar and logs in as the requested username/password
+ * and returns a request object to use like `request`.
+ *     let req = await requestLogin('user@dev', 'test')
+ *     let body = await req.get({url: '/admin'})
  * 
  * ### Fixtures
  * 
