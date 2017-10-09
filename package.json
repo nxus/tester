@@ -26,6 +26,9 @@
     "url": "https://github.com/nxus/tester/issues"
   },
   "homepage": "https://github.com/nxus/tester/",
+  "engines": {
+    "node": "~6"
+  },
   "dependencies": {
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
     "bluebird": "^3.2.1",
