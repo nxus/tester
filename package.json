@@ -1,6 +1,6 @@
 {
   "name": "nxus-tester",
-  "version": "4.0.0",
+  "version": "4.0.0-0",
   "description": "A test management framework for Nxus applications, built on Mocha and Chai",
   "main": "lib",
   "bin": {
