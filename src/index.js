@@ -16,7 +16,7 @@
  * 
  * You will want to use `mocha` as your test runner in your application project, here's a standard npm `test` script for your `package.json`
  * 
- *     "test": "NODE_ENV=test mocha --recursive --compilers js:babel-register -R spec modules/**/test/*",
+ *     "test": "NODE_ENV=test mocha --recursive --compilers js:babel-register -R spec modules/test/*",
  * 
  * ## Usage
  * 
