@@ -7,7 +7,7 @@
 'use strict';
 
 import Tester from '../src'
-import {testServer, request, requestRaw, createUser, requestLogin} from '../src'
+import {startTestServer, request, requestRaw, createUser, requestLogin} from '../src'
 
 describe("Tester", () => {
   describe("Load", () => {
@@ -27,13 +27,13 @@ describe("Tester", () => {
     it("should have requestLogin", () => {
       requestLogin.should.not.be.null
     });
-    it("should have testServer", () => testServer.should.not.be.null)
+    it("should have startTestServer", () => startTestServer.should.not.be.null)
   });
-  describe("testServer", function() {
+  describe("startTestServer", function() {
     let server
     before(async function() {
       this.timeout(10000)
-      server = await testServer('startNxus.js')
+      server = await startTestServer('startNxus.js')
     })
     it("should await startup", async function() {
       let body = await request.get({

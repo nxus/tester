@@ -22,18 +22,18 @@
  * 
  * ### Test Server startup
  * 
- * Any test suites that want to make requests to a running instance of your application should use `testServer`:
+ * Any test suites that want to make requests to a running instance of your application should use `startTestServer`:
  * 
  *     describe("My App", function() {
  *         before(function() {
  *             this.timeout(4000) // Depending on your apps startup speed
- *             testServer()
+ *             startTestServer()
  *         })
  *         ... // Your tests
  *     })
  * 
  * This is safe to call in multiple suites, only one test server will be started. You may pass an object as an
- * optional second argument to `testServer` for command ENV variables, such as DEBUG.
+ * optional second argument to `startTestServer` for command ENV variables, such as DEBUG.
  * 
  * ### Running tests
  * 
@@ -91,7 +91,7 @@ const fs = Promise.promisifyAll(fs_)
 import {NxusModule, application as app} from 'nxus-core'
 import {dataManager} from 'nxus-data-manager'
 
-import testServer from './testServer'
+import startTestServer from './testServer'
 
 const REGEX_FILE = /[^\/\~]$/;
 
@@ -177,4 +177,4 @@ async function requestLogin (username, password = 'test') {
   return req
 }
 
-export {Tester as default, tester, request, requestRaw, testServer, createUser, requestLogin, base}
+export {Tester as default, tester, request, requestRaw, startTestServer, createUser, requestLogin, base}

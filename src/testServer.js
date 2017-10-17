@@ -7,12 +7,10 @@ import path from 'path'
  * Start a test server
  */
 
-let _child, waiting
+let waiting
 
-export default function testServer(script="index.js", env={}) {
-  if (_child) {
-    return _child
-  }
+export default function startTestServer(script="index.js", env={}) {
+
   if (waiting) {
     return waiting
   }
@@ -28,7 +26,6 @@ export default function testServer(script="index.js", env={}) {
     child.on('message', (message) => {
       if (message.nxus && message.nxus.launched) {
         resolve(child)
-        _child = child
       }
     })
   })
