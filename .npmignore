@@ -1,1 +1,6 @@
+.babelrc
+.npmignore
+.travis.yml
 src
+startNxus.js
+test

@@ -1,0 +1,15 @@
+{
+  "siteName": "Nxus App",
+  "host": "localhost",
+  "baseUrl": "localhost:3001",
+  "storage": {
+    "adapters": {
+      "default": "waterline-sqlite3"
+    },
+    "connections": {
+      "default": {
+        "adapter": "default"
+      }
+    }
+  }
+}
