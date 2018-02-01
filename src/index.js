@@ -84,7 +84,6 @@ import request_lib from 'request-promise-native'
 import request_errors from 'request-promise-native/errors'
 import pluralize from 'pluralize'
 import path from 'path'
-import process from 'process'
 import fs_ from 'fs'
 const fs = Promise.promisifyAll(fs_)
 
@@ -101,12 +100,6 @@ class Tester extends NxusModule {
   constructor() {
     super()
     this._loadLocalFixtures()
-    app.onceAfter('launch', () => {
-      if (process.send) {
-        this.log.debug("Signalling parent process that server has launched")
-        process.send({nxus: {launched: true}})
-      }
-    })
   }
 
   /**
