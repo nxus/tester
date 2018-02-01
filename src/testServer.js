@@ -2,6 +2,8 @@ import Promise from 'bluebird'
 import process from 'process'
 import path from 'path'
 
+import {application as app} from 'nxus-core'
+
 /**
  * Start a test server
  */
@@ -22,8 +24,8 @@ export default function startTestServer(script="index.js", env={}) {
     for (let k in env) {
       process.env[k] = env[k]
     }
-    application = require(p)
-    application.onceAfter("launch", () => {
+    let application = require(p)
+    app.onceAfter("launch", () => {
       resolve()
     })
   })
