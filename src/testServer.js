@@ -4,14 +4,11 @@ import path from 'path'
 
 import {application} from 'nxus-core'
 
-/**
- * Start a test server
- */
 
 let waiting
 
 /**
- * Import a data file as fixture data for tests. Only runs if config.env==test
+ * Start a test server in the test process on port 3002
  * @param {string} script The entrypoint filename relative to cwd
  * @param {object} options additional ENV variables (override test database names, etc)
  * @return {Promise} resolves when application has started
