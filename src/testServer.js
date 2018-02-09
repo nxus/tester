@@ -10,6 +10,12 @@ import {application} from 'nxus-core'
 
 let waiting
 
+/**
+ * Import a data file as fixture data for tests. Only runs if config.env==test
+ * @param {string} script The entrypoint filename relative to cwd
+ * @param {object} options additional ENV variables (override test database names, etc)
+ * @return {Promise} resolves when application has started
+ */
 export default function startTestServer(script="index.js", env={}) {
 
   if (waiting) {
