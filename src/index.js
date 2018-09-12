@@ -33,7 +33,7 @@
  *     })
  * 
  * This is safe to call in multiple suites, only one test server will be started. You may pass an object as an
- * optional second argument to `startTestServer` for command ENV variables, such as DEBUG.
+ * optional second argument to `startTestServer` for command ENV variables, such as DEBUG or overriding test database names.
  * 
  * ### Running tests
  * 
@@ -73,6 +73,10 @@
  * 
  * Or by creating a top-level application `fixtures` directory with files named for the models they contain fixture data for.
  * 
+ * ### Use models and nxus modules in tests
+ * 
+ * The test server is started in the same process as your tests, so you may use e.g. `storage.getModel()` in your
+ * before() and test methods to create test data and assert that requests modify data.
  * 
  * # API
  * -----
@@ -84,7 +88,6 @@ import request_lib from 'request-promise-native'
 import request_errors from 'request-promise-native/errors'
 import pluralize from 'pluralize'
 import path from 'path'
-import process from 'process'
 import fs_ from 'fs'
 const fs = Promise.promisifyAll(fs_)
 
@@ -101,12 +104,6 @@ class Tester extends NxusModule {
   constructor() {
     super()
     this._loadLocalFixtures()
-    app.onceAfter('launch', () => {
-      if (process.send) {
-        this.log.debug("Signalling parent process that server has launched")
-        process.send({nxus: {launched: true}})
-      }
-    })
   }
 
   /**
