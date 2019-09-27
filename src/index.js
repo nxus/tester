@@ -1,29 +1,29 @@
-/* 
+/*
 * @Author: Mike Reich
 * @Date:   2016-02-05 08:28:40
 * @Last Modified 2016-05-19
 */
 /**
  * [![Build Status](https://travis-ci.org/nxus/tester.svg?branch=master)](https://travis-ci.org/nxus/tester)
- * 
+ *
  * A test management framework for Nxus applications.  The tester module provides some helper functions for funtionally testing a Nxus app.
- * 
+ *
  * ## Installation
- * 
+ *
  *     > npm install nxus-tester --save-dev
- * 
+ *
  * ## Configuration
- * 
+ *
  * You will want to use `mocha` as your test runner in your application project, here's a standard npm `test` script for your `package.json`
- * 
+ *
  *     "test": "NODE_ENV=test mocha --recursive --compilers js:babel-register -R spec modules/test/*",
- * 
+ *
  * ## Usage
- * 
+ *
  * ### Test Server startup
- * 
+ *
  * Any test suites that want to make requests to a running instance of your application should use `startTestServer`:
- * 
+ *
  *     describe("My App", function() {
  *         before(function() {
  *             this.timeout(4000) // Depending on your apps startup speed
@@ -31,53 +31,53 @@
  *         })
  *         ... // Your tests
  *     })
- * 
+ *
  * This is safe to call in multiple suites, only one test server will be started. You may pass an object as an
  * optional second argument to `startTestServer` for command ENV variables, such as DEBUG or overriding test database names.
- * 
+ *
  * ### Running tests
- * 
+ *
  *     > npm test
- * 
+ *
  * ### Requests
- * 
+ *
  * Requests to the test server can be made using helper methods for the `requests-with-promises` library.
- * 
+ *
  *     import {request, requestRaw, requestLogin} from 'nxus-tester'
- * 
+ *
  * `request` returns the body of a successful response
- *     
+ *
  *     let body = await request.get('/') // or request({url: '/', ...})
  *     res.statusCode.should.equal(200)
- *     
+ *
  * or errors with a non-2XX response
- *     
+ *
  *     let body = await request.get('/notHere')
  *      .catch(request.errors.StatusCodeError, (err) => {...})
- * 
+ *
  * `requestRaw` returns the response object, if you want to check statusCode, headers, etc
  *     let res = await requestRaw.get({url: '/admin', followRedirect: false})
  *     res.statusCode.should.equal(302)
  *     res.headers.location.should.contain('/login')
- * 
- * 
+ *
+ *
  * `requestLogin`` creates a new cookie jar and logs in as the requested username/password
  * and returns a request object to use like `request`.
  *     let req = await requestLogin('user@dev', 'test')
  *     let body = await req.get({url: '/admin'})
- * 
+ *
  * ### Fixtures
- * 
+ *
  * You can define fixtures (json or csv files with data to load during test startup) manually in your application modules:
  *     app.get('tester').fixture('modelName', 'path/to/fixture.json')
- * 
+ *
  * Or by creating a top-level application `fixtures` directory with files named for the models they contain fixture data for.
- * 
+ *
  * ### Use models and nxus modules in tests
- * 
+ *
  * The test server is started in the same process as your tests, so you may use e.g. `storage.getModel()` in your
  * before() and test methods to create test data and assert that requests modify data.
- * 
+ *
  * # API
  * -----
  */
@@ -98,11 +98,11 @@ import startTestServer from './testServer'
 
 const REGEX_FILE = /[^\/\~]$/;
 
-var base = 'http://localhost:3002/'
-
+var base = "http://localhost:"+(process.env.PORT || "3002")
 class Tester extends NxusModule {
   constructor() {
     super()
+    base = "http://"+app.config.host+":"+app.config.PORT
     this._loadLocalFixtures()
   }
 
@@ -136,7 +136,7 @@ class Tester extends NxusModule {
         this.provide('fixture', model, p)
       }
     });
-    
+
   }
 }
 var tester = Tester.getProxy()
@@ -147,7 +147,7 @@ var requestRaw = request.defaults({resolveWithFullResponse: true, simple: false}
 
 async function createUser (username, password = 'test') {
   // TODO check for existing user, API?
-  let req = await request_login('admin@nxus.org', 'admin')
+  let req = await requestLogin('admin@nxus.org', 'admin')
   await req.post({
     url: '/admin/users/save',
     form: {
@@ -155,12 +155,14 @@ async function createUser (username, password = 'test') {
       password: password
     }
   })
-  return request_login(username, password)
+  return requestLogin(username, password)
 }
 
 async function requestLogin (username, password = 'test') {
+  //use the correct baseURL for cookie matching
   var jar = request.jar()
-  var req = request.defaults({jar: jar})
+  let opts = {jar: jar, baseUrl: base}
+  var req = request.defaults(opts)
   req.cookieJar = jar
   await req.post({
     url: '/login',
